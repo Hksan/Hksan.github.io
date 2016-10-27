@@ -1,0 +1,167 @@
+/* -- Benytter meg av flex-bokser -- */
+* {
+    font-size: 25px;
+    font-family: 'Open Sans', sans-serif;
+    color: black;
+    background-color: floralwhite;
+}
+
+#kalkulator {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+/* -- Flex-bokser for #tall: -- */
+#tall {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 400px;
+}
+
+.tallRad {
+    display: flex;
+    flex: 1;
+    background-color: dimgrey;
+}
+
+.tallRute {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background-color: orange;
+    transition-duration: 0.1s;
+}
+
+.tallRute:hover {
+    background-color: white;
+}
+
+/* -- Flex-bokser for #valuta: --*/
+#valuta{
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 400px;
+}
+
+.valutaRad {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    background-color: burlywood;
+}
+
+.select{
+    display: flex;
+    flex: 1;
+}
+
+select {
+    -webkit-appearance: button;
+    -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    -webkit-padding-end: 20px;
+    -webkit-padding-start: 2px;
+    -webkit-user-select: none;
+    background-image: url(15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+    background-position: 97% center;
+    background-repeat: no-repeat;
+    border: 1px solid #AAA;
+    color: #555;
+    margin: 20px;
+    margin-top: 0px;
+    padding: 5px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 300px;
+    background-color: #F4F4F4;
+}
+
+p {
+    margin-left: 20px;
+    font-size: 30px;
+    background-color: burlywood;
+}
+
+/* -- Fjerner standard blå linje i nettleseren  -- */
+button:focus {
+    outline: 0;
+}
+
+input:focus {
+    outline: 0;
+}
+
+select:focus {
+    outline: 0;
+}
+
+/* -- Keyframes animasjon når man trykker en knapp -- */
+
+@keyframes klikkFarge {
+    0% {background-color: white;}
+    50% {background-color: darkorange;}
+    100% {background-color: white;}
+}
+
+/* -- flex-boksene-- */
+.tallRad:first-child .tallRute:first-child {
+    flex:0 0 75%;
+}
+
+.tallRad:last-child .tallRute:first-child {
+    flex:0 0 50%;
+}
+
+.tallRute:last-child {
+    background-color: darkorange;
+}
+
+.tallRute:last-child:hover {
+    background-color: white;
+}
+
+/* -- Input feltet -- */
+
+input {
+    width: 650px;
+    padding: 0px;
+    border: none;
+}
+
+#bord {
+    width: 50px;
+    max-width: 650px;
+    border-right: 350px;
+    height: 5px;
+    background-color: #808080;
+    transition-duration: 0.2s;
+}
+
+#top {
+    width: 750px;
+    display: block;
+    margin : 0 auto;
+    position: relative;
+}
+
+
+/* -- Input boks -- */
+#skjerm {
+    padding: 8px;
+    display: block;
+    border: none;
+
+    transition-duration: 0.2s;
+    font-size: 28px;
+    width: 100px;
+}
+
+/* Ovenfor input -- */
+#regnestykket {
+    width: 750px;
+    height: 50px;
+}

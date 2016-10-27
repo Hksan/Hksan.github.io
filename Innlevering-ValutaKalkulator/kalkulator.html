@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="kalkulator.css">
+    <script src="plugin/jquery-3.1.1.min.js"></script>
+    <script src="plugin/money.min.js"></script>
+
+    <title>Valutakalkulator</title>
+</head>
+<body>
+
+    <div id="valutakalkulator">
+        <div id="top">
+            <div id="regnestykket"></div>
+            <input type="text" id="inputFelt"/>
+            <div></div>
+            <div id="bord"></div>
+        </div>
+        <div id="kalkulator">
+            <div id="tall"></div>
+            <div id="valuta"></div>
+        </div>
+    </div>
+
+    <script>
+
+        // Skal gjøre: Flexbox animasjon når man åpner siden eller regner ut et stykke
+        // http://openexchangerates.github.io/money.js/
+
+        // Lage kalkulator
+        var tall = document.getElementById("tall");
+        var valuta = document.getElementById("valuta");
+        /*var skjerm = document.getElementById("skjerm");*/
+
+        // Lage selve kalkulatoren
+        function lagTall(){
+            var tallArry = [["C", "÷"],[7, 8, 9, "×"], [4, 5, 6, "−"], [1, 2, 3, "+"], [0, ".", "="]];
+
+            // Lage k rader
+            for(var k = 0; k < tallArry.length; k++){
+
+                var rad = document.createElement("div");
+                rad.className = "tallRad";
+                tall.appendChild(rad);
+
+                // Hver rad skal innholde k tall
+                for(var i = 0; i < tallArry[k].length; i++){
+                    var knapp = document.createElement("button");
+                    knapp.innerHTML = tallArry[k][i];
+                    knapp.className = "tallRute";
+
+                    // Animasjon når man klikker på en knapp
+                    knapp.onclick = fellesKnapp;
+
+                    rad.appendChild(knapp);
+                }
+            }
+        }
+
+        lagTall();
+
+        // Valutaboks
+        function lagValuta(){
+            var rad = document.createElement("div");
+            rad.className = "valutaRad";
+            valuta.appendChild(rad);
+            var selectBoks = [` <option value="NOK">Norske kroner</option>
+                                <option value="EUR">Euro</option>
+                                <option value="USD">Amerikanske dollar</option>
+                                <option value="DKK">Danske kroner</option>`,
+                                `<option value="USD">Amerikanske dollar</option>
+                                <option value="NOK">Norske kroner</option>
+                                <option value="EUR">Euro</option>
+                                <option value="DKK">Danske kroner</option>`];
+
+            var tekst = ["Fra:", "Til:"];
+
+            for (var i = 0; i < 2; i++){
+                var pElement = document.createElement("p");
+                pElement.innerHTML = tekst[i];
+
+                var select = document.createElement("select");
+                select.name = "name[]";
+                select.innerHTML = selectBoks[i];
+                select.className = "select";
+
+                rad.appendChild(pElement);
+                rad.appendChild(select);
+            }
+        }
+
+        lagValuta();
+
+        // Felles funksjon for alle knapper
+        function fellesKnapp(){
+
+            // Animasjon til knapper
+            this.style.animation = "klikkFarge 0.2s";
+
+            // Endre tilbake til vanlig klasse etter 0.2s
+             window.setTimeout(function(){
+                 $("button").css("animation", "");
+            }, 200);
+
+            // Legge tall inn i input feltet
+            // skjerm.value += this.innerHTML;
+        }
+
+
+        // Renge ut tekst bredde til animasjonen i input feltet
+        function getTextWidth(text, font) {
+            // re-use canvas object for better performance
+            var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+            var context = canvas.getContext("2d");
+            context.font = font;
+            var metrics = context.measureText(text);
+            return metrics.width;
+        }
+
+        // Endre borden under input feltet
+
+        $( "input[type='text']" ).keypress(function() {
+            // console.log("Trykker ned knapp");
+            endreBord(0);
+        });
+        $( "input[type='text']" ).mouseenter(function() {
+           // console.log("Mus er over");
+           endreBord(1);
+        });
+        $( "input[type='text']" ).mouseleave(function() {
+            // console.log("Mus er borte");
+            endreBord(2);
+        });
+        $( "input[type='text']" ).keyup(function(event){
+            // Backspace og delete
+            if(event.keyCode == 8 || event.keyCode == 46){
+                endreBord(2);
+            }
+        });
+
+
+        var avsluttHover = 0;
+        var ekstraBredde = 50;
+
+        function endreBord(nr) {
+
+            var bord = document.getElementById("bord");
+            var inputFelt = document.getElementById("inputFelt");
+
+            if (nr == 1 && avsluttHover == 0) {
+                ekstraBredde = 100;
+                avsluttHover = 1;
+            } if (nr == 2 && avsluttHover == 1){
+                ekstraBredde = 50;
+                avsluttHover = 0;
+            } else if (nr == 0  && avsluttHover == 0){
+                ekstraBredde = 50;
+            }
+
+            var tekstBredde = getTextWidth(inputFelt.value, "bold 28px arial");
+            bord.style.width = ekstraBredde + tekstBredde + "px";
+        }
+
+        // Bare tillate noen symboler i input feltet
+        $('input').bind('keypress', function (event) {
+            var regex = new RegExp("^[-Z0-9\*\/\+\-\=]+$");
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key)) {
+                event.preventDefault();
+                return false;
+            }
+        });
+
+        // Sørge for at man ikke kan velge samme valg fra select-boksene
+        function oppdaterBoks() {
+            var myOpt = [];
+            $("select").each(function () {
+                myOpt.push($(this).val());
+            });
+            $("select").each(function () {
+                $(this).find("option").prop('hidden', false);
+                var sel = $(this);
+                $.each(myOpt, function(key, value) {
+                    if((value != "") && (value != sel.val())) {
+                        sel.find("option").filter('[value="' + value +'"]').prop('hidden', true);
+                    }
+                });
+            });
+        }
+
+        $('select').change(oppdaterBoks);
+        oppdaterBoks();
+
+        // Hente gjeldene valutaverdier via money.js fra openexchangerates.org
+        // Bruker en standard gratis API :)
+
+            // Load exchange rates data via AJAX:
+            $.getJSON(
+                    // NB: using Open Exchange Rates here, but you can use any source!
+                    'https://openexchangerates.org/api/latest.json?app_id=988442eb254b4c37a83451598eace8aa',
+                    function(data) {
+                        // Check money.js has finished loading:
+                        if ( typeof fx !== "undefined" && fx.rates ) {
+                            fx.rates = data.rates;
+                            fx.base = data.base;
+                        } else {
+                            // If not, apply to fxSetup global:
+                            var fxSetup = {
+                                rates : data.rates,
+                                base : data.base
+                            }
+                        }
+                    }
+            );
+
+
+        // Sørge for riktig symboler
+
+
+            var symboler = ["÷", "×", "−", "+", ".", "＝"];
+            var vanlig = ["/", "*", "-", "+", ",", "="];
+
+    </script>
+
+</body>
+</html>
