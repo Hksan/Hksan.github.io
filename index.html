@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" href="kalkulator.css">
     <script src="plugin/jquery-3.1.1.min.js"></script>
     <script src="plugin/money.min.js"></script>
@@ -75,12 +77,20 @@
                                 <option value="EUR">Euro</option>
                                 <option value="USD">Amerikanske dollar</option>
                                 <option value="DKK">Danske kroner</option>
-                                <option value="ZMK">Zambisk kwacha</option>`,
+                                <option value="ZMK">Zambisk kwacha</option>
+                                <option value="SEK">Svenske kroner</option>
+                                <option value="RUB">Russiske rubler</option>
+                                <option value="CNY">Kinesisk yuan </option> /* renminbi */
+                                <option value="ZAR">Sørafrikanske rand</option>`,
                                 `<option value="USD">Amerikanske dollar</option>
                                 <option value="NOK">Norske kroner</option>
                                 <option value="EUR">Euro</option>
                                 <option value="DKK">Danske kroner</option>
-                                <option value="ZMK">Zambisk kwacha</option>`];
+                                <option value="ZMK">Zambisk kwacha</option>
+                                <option value="SEK">Svenske kroner</option>
+                                <option value="RUB">Russiske rubler</option>
+                                <option value="CNY">Kinesisk yuan</option>
+                                <option value="ZAR">Sørafrikanske rand</option>`];
 
             var tekst = ["Fra:", "Til:"];
             var klasser = ["forste", "andre"];
@@ -195,7 +205,7 @@
 
         // Bare tillate noen symboler i input feltet
         $('input').bind('keypress', function (event) {
-            var regex = new RegExp("^[-Z0-9\*\/\+\-]+$");
+            var regex = new RegExp("^[-Z0-9\*\/\+\-\.]+$");
             var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
             if (!regex.test(key)) {
                 event.preventDefault();
@@ -290,8 +300,12 @@
             // console.log(fx.convert(utreging));
             var konvertertTall = fx.convert(utreging);
 
-            // Sette utregningen i regnestykket
-            regneStykket.innerHTML = utreging + " " + forste + " = " + konvertertTall.toFixed(2) + " " + andre;
+
+            // Sette utregningen i regnestykket med fading
+            $("#regnestykket").fadeOut(0);
+            regnestykket.innerHTML = utreging.toFixed(2) + " " + forste + " = " + konvertertTall.toFixed(2) + " " + andre;
+            $("#regnestykket").fadeIn(400);
+
 
             // Endre input felt og valutaSymbol
             inputFelt.value = "";
