@@ -16,7 +16,7 @@
         <div id="top">
             <div id="regnestykket"></div>
             <input type="text" id="inputFelt"/>
-            <div>testing123</div>
+            <div id="valutaSymbol">NOK</div>
             <div id="bord"></div>
         </div>
         <div id="kalkulator">
@@ -34,6 +34,10 @@
         var tall = document.getElementById("tall");
         var valuta = document.getElementById("valuta");
         /*var skjerm = document.getElementById("skjerm");*/
+        var inputFelt = document.getElementById("inputFelt");
+        var regneStykket = document.getElementById("regnestykket");
+
+
 
         // Lage selve kalkulatoren
         function lagTall(){
@@ -70,13 +74,16 @@
             var selectBoks = [` <option value="NOK">Norske kroner</option>
                                 <option value="EUR">Euro</option>
                                 <option value="USD">Amerikanske dollar</option>
-                                <option value="DKK">Danske kroner</option>`,
+                                <option value="DKK">Danske kroner</option>
+                                <option value="ZMK">Zambisk kwacha</option>`,
                                 `<option value="USD">Amerikanske dollar</option>
                                 <option value="NOK">Norske kroner</option>
                                 <option value="EUR">Euro</option>
-                                <option value="DKK">Danske kroner</option>`];
+                                <option value="DKK">Danske kroner</option>
+                                <option value="ZMK">Zambisk kwacha</option>`];
 
             var tekst = ["Fra:", "Til:"];
+            var klasser = ["forste", "andre"];
 
             for (var i = 0; i < 2; i++){
                 var pElement = document.createElement("p");
@@ -85,7 +92,7 @@
                 var select = document.createElement("select");
                 select.name = "name[]";
                 select.innerHTML = selectBoks[i];
-                select.className = "select";
+                select.className = "select" +" " +  klasser[i];
 
                 rad.appendChild(pElement);
                 rad.appendChild(select);
@@ -98,15 +105,26 @@
         function fellesKnapp(){
 
             // Animasjon til knapper
-            this.style.animation = "klikkFarge 0.2s";
+            this.style.animation = "klikkFarge 0.1s";
 
             // Endre tilbake til vanlig klasse etter 0.2s
              window.setTimeout(function(){
                  $("button").css("animation", "");
-            }, 200);
+            }, 100);
 
             // Legge tall inn i input feltet
-            // skjerm.value += this.innerHTML;
+            if (this.innerHTML != "="){
+                inputFelt.value += this.innerHTML;
+                endreBord(0);
+            }
+
+            // C knapp og erlik knapp
+            if (this.innerHTML == "C"){
+                inputFelt.value = "";
+                endreBord(0);
+            } if (this.innerHTML == "="){
+                utRegning();
+            }
         }
 
 
@@ -139,11 +157,14 @@
             if(event.keyCode == 8 || event.keyCode == 46){
                 endreBord(2);
             }
+            // Enter
+            if(event.keyCode == 13){
+                utRegning();
+            }
         });
 
-
         var avsluttHover = 0;
-        var ekstraBredde = 50;
+        var ekstraBredde = 450;
 
         function endreBord(nr) {
 
@@ -151,22 +172,30 @@
             var inputFelt = document.getElementById("inputFelt");
 
             if (nr == 1 && avsluttHover == 0) {
-                ekstraBredde = 100;
+                ekstraBredde = 500;
                 avsluttHover = 1;
             } if (nr == 2 && avsluttHover == 1){
-                ekstraBredde = 50;
+                ekstraBredde = 450;
                 avsluttHover = 0;
             } else if (nr == 0  && avsluttHover == 0){
-                ekstraBredde = 50;
+                ekstraBredde = 450;
             }
 
             var tekstBredde = getTextWidth(inputFelt.value, "bold 28px arial");
             bord.style.width = ekstraBredde + tekstBredde + "px";
+
+            // Fikse marginLeft
+            var marginLeftVerdi = ekstraBredde + tekstBredde
+            if (marginLeftVerdi < 750){
+                bord.style.marginLeft = 750 -  (marginLeftVerdi) + "px";
+            } if (marginLeftVerdi > 750) {
+                bord.style.marginLeft = "0px";
+            }
         }
 
         // Bare tillate noen symboler i input feltet
         $('input').bind('keypress', function (event) {
-            var regex = new RegExp("^[-Z0-9\*\/\+\-\=]+$");
+            var regex = new RegExp("^[-Z0-9\*\/\+\-]+$");
             var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
             if (!regex.test(key)) {
                 event.preventDefault();
@@ -174,8 +203,13 @@
             }
         });
 
-        // Sørge for at man ikke kan velge samme valg fra select-boksene
+
+        var forste = "NOK";
+        var andre = "USD";
+
         function oppdaterBoks() {
+
+            // Sørge for at man ikke kan velge samme valg fra select-boksene
             var myOpt = [];
             $("select").each(function () {
                 myOpt.push($(this).val());
@@ -189,6 +223,20 @@
                     }
                 });
             });
+
+            // Sørge for gjeldene valuta i div
+            $(document).on('change', '.forste', function(e) {
+                // console.log(this.options[e.target.selectedIndex].text);
+                var valutaSymbol = document.getElementById("valutaSymbol");
+                forste = this.options[e.target.selectedIndex].value;
+                valutaSymbol.innerHTML = forste;
+            });
+
+            $(document).on('change', '.andre', function(e) {
+                andre = this.options[e.target.selectedIndex].value;
+            });
+
+
         }
 
         $('select').change(oppdaterBoks);
@@ -217,11 +265,40 @@
             );
 
 
-        // Sørge for riktig symboler
+        // Regne ut
+        function regn(fn) {
+            return new Function('return ' + fn)();
+        }
 
+        // Felles utregningsfuksjon
+        function utRegning(){
 
-            var symboler = ["÷", "×", "−", "+", ".", "＝"];
-            var vanlig = ["/", "*", "-", "+", ",", "="];
+            var stykke = inputFelt.value;
+
+            if (stykke == ""){
+                alert("OBS! Du har glemt å skrive noe :)" +
+                        "\nTrykk Enter eller '= knappen' nedenfor for å regne ut stykket");
+                return false;
+            }
+
+            stykke = stykke.replace(/×/g, '*').replace(/÷/g, '/').replace(/'+'/g, '+').replace(/'−'/g, '-');
+            // console.log(regn(`${stykke}`));
+            var utreging = regn(stykke);
+
+            // Konverte til riktig valuta
+            fx.settings = { from: forste, to: andre };
+            // console.log(fx.convert(utreging));
+            var konvertertTall = fx.convert(utreging);
+
+            // Sette utregningen i regnestykket
+            regneStykket.innerHTML = utreging + " " + forste + " = " + konvertertTall.toFixed(2) + " " + andre;
+
+            // Endre input felt og valutaSymbol
+            inputFelt.value = "";
+            endreBord(0);
+
+            return true;
+        }
 
     </script>
 

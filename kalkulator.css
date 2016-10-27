@@ -126,21 +126,6 @@ select:focus {
 
 /* -- Input feltet -- */
 
-input {
-    width: 650px;
-    padding: 0px;
-    border: none;
-}
-
-#bord {
-    width: 50px;
-    max-width: 650px;
-    border-right: 350px;
-    height: 5px;
-    background-color: #808080;
-    transition-duration: 0.2s;
-}
-
 #top {
     width: 750px;
     display: block;
@@ -148,20 +133,34 @@ input {
     position: relative;
 }
 
-
-/* -- Input boks -- */
-#skjerm {
-    padding: 8px;
-    display: block;
+input {
+    width: 400px;
+    padding: 0px;
     border: none;
-
-    transition-duration: 0.2s;
-    font-size: 28px;
-    width: 100px;
+    text-align: right;
 }
 
-/* Ovenfor input -- */
+#bord {
+    width: 450px;
+    max-width: 750px;
+    border-left: 350px;
+    height: 5px;
+    background-color: #808080;
+    transition-duration: 0.2s;
+    margin-left: 300px;
+}
+
+#valutaSymbol {
+    width: 80px;
+    height: 30px;
+    display: inline-block;
+}
+
+
+/* -- Regnestykket ovenfor input-- */
 #regnestykket {
-    width: 750px;
+    width: 400px;
     height: 50px;
+    text-align: right;
+    margin-right: 350px;
 }
