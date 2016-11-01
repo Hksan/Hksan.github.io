@@ -27,19 +27,16 @@
         </div>
     </div>
 
-    <script>
+    <div id="gjeldeneTid"></div>
 
-        // Skal gjøre: Flexbox animasjon når man åpner siden eller regner ut et stykke
-        // http://openexchangerates.github.io/money.js/
+    <script>
 
         // Lage kalkulator
         var tall = document.getElementById("tall");
         var valuta = document.getElementById("valuta");
-        /*var skjerm = document.getElementById("skjerm");*/
         var inputFelt = document.getElementById("inputFelt");
         var regneStykket = document.getElementById("regnestykket");
-
-
+        var gjeldeneTid = document.getElementById("gjeldeneTid");
 
         // Lage selve kalkulatoren
         function lagTall(){
@@ -137,8 +134,7 @@
             }
         }
 
-
-        // Renge ut tekst bredde til animasjonen i input feltet
+        // Regne ut tekst bredde til animasjonen i input feltet
         function getTextWidth(text, font) {
             // re-use canvas object for better performance
             var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
@@ -149,7 +145,6 @@
         }
 
         // Endre borden under input feltet
-
         $( "input[type='text']" ).keypress(function() {
             // console.log("Trykker ned knapp");
             endreBord(0);
@@ -253,7 +248,7 @@
         oppdaterBoks();
 
         // Hente gjeldene valutaverdier via money.js fra openexchangerates.org
-        // Bruker en standard gratis API :)
+        // Laget meg en gratis bruker på openexchangerates.org og bruker en API :)
 
             // Load exchange rates data via AJAX:
             $.getJSON(
@@ -271,6 +266,13 @@
                                 base : data.base
                             }
                         }
+
+                        // Sette gjeldene oppdatert tid
+                        var utcSeconds = data.timestamp;
+                        var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+                        d.setUTCSeconds(utcSeconds);
+                        // console.log(d);
+                        gjeldeneTid.innerHTML = "Valutakurs er oppdatert den " + d.toLocaleDateString() + " kl." + d.toLocaleTimeString();
                     }
             );
 

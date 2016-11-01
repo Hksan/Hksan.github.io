@@ -172,3 +172,14 @@ input {
     font-family: 'Montserrat', sans-serif;
     font-size: 35px;
 }
+
+/* -- Den oppdaterte tiden til valutakursen -- */
+#gjeldeneTid {
+    position: absolute;
+    bottom: 0;
+    right: 20px;
+    width: 1000px;
+    text-align:right;
+    font-size: 20px;
+    font-style: italic;
+}
